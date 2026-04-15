@@ -1,0 +1,17 @@
+# pnpm workspace configuration for Rent Lessly monorepo
+# This file defines which directories are part of the pnpm workspace
+
+packages:
+  # Applications
+  - 'apps/*'
+  
+  # Shared packages
+  - 'packages/*'
+
+# Exclude node_modules and other folders from being considered as packages
+exclude:
+  - '**/node_modules/**'
+  - '**/dist/**'
+  - '**/build/**'
+  - '.turbo'
+  - '.next'

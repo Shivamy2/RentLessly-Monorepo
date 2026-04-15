@@ -1,0 +1,11 @@
+{
+  "name": "@rent-lessly/types",
+  "version": "1.0.0",
+  "description": "Shared types for Rent Lessly",
+  "main": "src/index.js",
+  "exports": {
+    ".": {
+      "import": "./src/index.js"
+    }
+  }
+}

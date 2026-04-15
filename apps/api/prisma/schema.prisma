@@ -1,0 +1,186 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// =====================
+// User & Authentication
+// =====================
+
+model User {
+  id                String    @id @default(cuid())
+  phoneNumber       String    @unique
+  email             String?   @unique
+  role              String    @default("USER") // USER, ADMIN, BROKER
+  isPhoneVerified   Boolean   @default(false)
+  isEmailVerified   Boolean   @default(false)
+  lastLoginAt       DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  // Relations
+  savedProperties   SavedProperty[]
+  visits            Visit[]
+  notifications     Notification[]
+  brokerProfiles    Broker[]
+  createdProperties Property[]
+
+  @@index([phoneNumber])
+  @@index([role])
+}
+
+model OTPLog {
+  id          String   @id @default(cuid())
+  phoneNumber String
+  otp         String
+  attempts    Int      @default(0)
+  isVerified  Boolean  @default(false)
+  expiresAt   DateTime
+  createdAt   DateTime @default(now())
+
+  @@index([phoneNumber])
+  @@index([expiresAt])
+}
+
+// =====================
+// Properties
+// =====================
+
+model Property {
+  id                String    @id @default(cuid())
+  title             String
+  description       String?
+  slug              String    @unique
+  locality          String
+  city              String    @default("GURUGRAM")
+  bhk               Int       // 1, 2, 3, 4+ BHK
+  rent              Int       // Monthly rent in INR
+  area              Int       // Area in sq.ft
+  furnishedType     String    // UNFURNISHED, SEMI_FURNISHED, FULLY_FURNISHED
+  amenities         String[]
+  viewCount         Int       @default(0)
+  isActive          Boolean   @default(true)
+  createdBy         String    // Admin user ID
+  brokerId          String
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  // Relations
+  images            PropertyImage[]
+  broker            Broker    @relation(fields: [brokerId] references: [id], onDelete: Cascade)
+  creator           User      @relation(fields: [createdBy] references: [id])
+  savedBy           SavedProperty[]
+  visits            Visit[]
+
+  @@index([locality])
+  @@index([city])
+  @@index([bhk])
+  @@index([rent])
+  @@index([brokerId])
+  @@index([isActive])
+  @@index([createdAt])
+}
+
+model PropertyImage {
+  id          String   @id @default(cuid())
+  url         String   // Cloudflare R2 URL
+  order       Int      @default(0)
+  propertyId  String
+  createdAt   DateTime @default(now())
+
+  property    Property @relation(fields: [propertyId] references: [id], onDelete: Cascade)
+
+  @@index([propertyId])
+}
+
+// =====================
+// Broker
+// =====================
+
+model Broker {
+  id          String   @id @default(cuid())
+  name        String
+  phone       String   @unique
+  email       String?
+  company     String?
+  userId      String
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user        User     @relation(fields: [userId] references: [id], onDelete: Cascade)
+  properties  Property[]
+
+  @@index([userId])
+  @@index([phone])
+}
+
+// =====================
+// Saved Properties
+// =====================
+
+model SavedProperty {
+  id          String   @id @default(cuid())
+  userId      String
+  propertyId  String
+  createdAt   DateTime @default(now())
+
+  user        User     @relation(fields: [userId] references: [id], onDelete: Cascade)
+  property    Property @relation(fields: [propertyId] references: [id], onDelete: Cascade)
+
+  @@unique([userId, propertyId])
+  @@index([userId])
+  @@index([propertyId])
+}
+
+// =====================
+// Visits
+// =====================
+
+model Visit {
+  id          String   @id @default(cuid())
+  userId      String
+  propertyId  String
+  visitDate   DateTime
+  timeSlot    String   // "09:00-10:00", "10:00-11:00", etc.
+  status      String   @default("SCHEDULED") // SCHEDULED, CONFIRMED, COMPLETED, CANCELLED
+  notes       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user        User     @relation(fields: [userId] references: [id], onDelete: Cascade)
+  property    Property @relation(fields: [propertyId] references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([propertyId])
+  @@index([visitDate])
+  @@index([status])
+}
+
+// =====================
+// Notifications
+// =====================
+
+model Notification {
+  id          String   @id @default(cuid())
+  userId      String
+  title       String
+  message     String
+  type        String   // PROPERTY_UPDATE, VISIT_REMINDER, PRICE_DROP
+  isRead      Boolean  @default(false)
+  relatedId   String?  // Property or Visit ID
+  createdAt   DateTime @default(now())
+
+  user        User     @relation(fields: [userId] references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([isRead])
+  @@index([createdAt])
+}

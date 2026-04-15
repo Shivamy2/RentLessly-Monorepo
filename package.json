@@ -1,0 +1,25 @@
+{
+  "name": "rent-lessly-monorepo",
+  "version": "1.0.0",
+  "description": "Rent it effortlessly - A rental flat platform for Gurugram",
+  "private": true,
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "type-check": "turbo run type-check",
+    "test": "turbo run test",
+    "format": "prettier --write \"**/*.{js,jsx,json,md}\"",
+    "clean": "turbo run clean && rm -rf node_modules"
+  },
+  "devDependencies": {
+    "turbo": "^1.10.0",
+    "prettier": "^3.0.0",
+    "eslint": "^8.50.0",
+    "eslint-config-prettier": "^9.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=8.0.0"
+  }
+}

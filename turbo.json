@@ -1,0 +1,67 @@
+{
+  "$schema": "https://turbo.build/json-schema.json",
+  "version": "2",
+  "tasks": {
+    "build": {
+      "description": "Build applications and packages",
+      "inputs": [
+        "src/**/*.tsx",
+        "src/**/*.ts",
+        "src/**/*.json",
+        "package.json",
+        "tsconfig.json"
+      ],
+      "outputs": [
+        "dist/**",
+        ".next/**",
+        "build/**"
+      ],
+      "cache": true,
+      "dependsOn": [
+        "^build"
+      ]
+    },
+    "lint": {
+      "description": "Run ESLint on the codebase",
+      "outputs": [],
+      "cache": false
+    },
+    "type-check": {
+      "description": "Type check with TypeScript",
+      "outputs": [],
+      "cache": true
+    },
+    "test": {
+      "description": "Run test suites",
+      "outputs": [
+        "coverage/**"
+      ],
+      "cache": true,
+      "dependsOn": [
+        "^build"
+      ]
+    },
+    "dev": {
+      "description": "Start development server",
+      "cache": false,
+      "persistent": true
+    },
+    "prisma:generate": {
+      "description": "Generate Prisma types",
+      "outputs": [
+        "node_modules/@prisma/**"
+      ],
+      "cache": true
+    },
+    "prisma:migrate": {
+      "description": "Run database migrations",
+      "cache": false
+    }
+  },
+  "globalDependencies": [
+    "package.json",
+    ".env",
+    ".env.local",
+    ".env.*.local"
+  ]
+}

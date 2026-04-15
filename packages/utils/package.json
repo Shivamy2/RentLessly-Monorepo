@@ -1,0 +1,11 @@
+{
+  "name": "@rent-lessly/utils",
+  "version": "1.0.0",
+  "description": "Shared utilities for Rent Lessly",
+  "main": "src/index.js",
+  "exports": {
+    ".": {
+      "import": "./src/index.js"
+    }
+  }
+}
