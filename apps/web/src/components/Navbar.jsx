@@ -50,7 +50,7 @@ export function Navbar() {
           ) : (
             <Link href="/login">
               <Button size="sm" variant="primary">
-                Login
+                Login/Signup
               </Button>
             </Link>
           )}

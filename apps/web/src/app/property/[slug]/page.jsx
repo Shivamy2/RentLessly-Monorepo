@@ -23,11 +23,7 @@ export default function PropertyPage() {
   const [showVisitModal, setShowVisitModal] = useState(false);
 
   const { property, isLoading, isError } = useProperty(slug);
-
-// https://rentlessly.in/property/2-bhk-fully-furnished-sector-56-gurugram-12345
-
-// https://rentlessly.in/property/1-BHK-in-Palam-Vihar-Gurgaon-for-rent-12345
-
+  
   if (isLoading) {
     return (
       <div className="max-w-6xl mx-auto px-4 py-8">

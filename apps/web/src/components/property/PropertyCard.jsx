@@ -1,102 +1,215 @@
 /**
  * PropertyCard Component
- * Reusable card for displaying property in grid/list views
- * Minimal border radius design inspired by No Broker style
+ * MUI Card for displaying property in grid/list views
  */
 
 'use client';
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { formatPrice, formatArea } from '@rent-lessly/utils';
-import { Button } from '@rent-lessly/ui';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import CardMedia from '@mui/material/CardMedia';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import Chip from '@mui/material/Chip';
+import IconButton from '@mui/material/IconButton';
+import Stack from '@mui/material/Stack';
+import Divider from '@mui/material/Divider';
+import FavoriteIcon from '@mui/icons-material/Favorite';
+import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+import LocationOnIcon from '@mui/icons-material/LocationOn';
+import SquareFootIcon from '@mui/icons-material/SquareFoot';
+import WeekendIcon from '@mui/icons-material/Weekend';
+import VerifiedIcon from '@mui/icons-material/Verified';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 
 export function PropertyCard({ property, onSave, isSaved = false }) {
-  const thumbnailUrl = property.images?.[0]?.url || '/placeholder.jpg';
+  const thumbnailUrl = property?.images?.[0]?.url || '/placeholder-property.jpg';
+  const rent = property?.rent || 0;
+  const bhk = property?.bhk || 2;
+  const locality = property?.locality || 'Gurugram';
+  const area = property?.area || 1000;
+  const furnishedType = property?.furnishedType || 'SEMI_FURNISHED';
+  const slug = property?.slug || 'property';
 
   const handleSave = (e) => {
     e.preventDefault();
-    onSave?.(property.id);
+    e.stopPropagation();
+    onSave?.(property?.id);
+  };
+
+  const formatRent = (value) => {
+    if (value >= 100000) {
+      return `₹${(value / 100000).toFixed(1)}L`;
+    }
+    return `₹${value.toLocaleString('en-IN')}`;
   };
 
   return (
-    <Link href={`/property/${property.slug}`}>
-      <a className="block border border-gray-300 rounded-sm overflow-hidden hover:shadow-md transition-shadow bg-white">
+    <Link href={`/property/${slug}`} style={{ textDecoration: 'none' }}>
+      <Card
+        sx={{
+          height: '100%',
+          cursor: 'pointer',
+          transition: 'all 0.3s ease',
+          '&:hover': {
+            transform: 'translateY(-4px)',
+            boxShadow: 6,
+          },
+          '&:hover .property-image': {
+            transform: 'scale(1.05)',
+          },
+          '&:hover .view-details': {
+            color: 'primary.main',
+          },
+        }}
+      >
         {/* Image Container */}
-        <div className="relative h-48 w-full bg-gray-200">
-          <Image
-            src={thumbnailUrl}
-            alt={property.title}
-            fill
-            className="object-cover"
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+        <Box sx={{ position: 'relative', height: { xs: 192, md: 208 }, overflow: 'hidden' }}>
+          <Box
+            className="property-image"
+            sx={{
+              position: 'relative',
+              width: '100%',
+              height: '100%',
+              transition: 'transform 0.5s ease',
+            }}
+          >
+            <Image
+              src={thumbnailUrl}
+              alt={`${bhk} BHK in ${locality}`}
+              fill
+              style={{ objectFit: 'cover' }}
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            />
+          </Box>
+
+          {/* Gradient Overlay */}
+          <Box
+            sx={{
+              position: 'absolute',
+              inset: 0,
+              background: 'linear-gradient(to top, rgba(0,0,0,0.4), transparent)',
+            }}
           />
 
           {/* Price Badge */}
-          <div className="absolute top-3 left-3 bg-black text-white px-3 py-1 text-sm font-semibold">
-            ₹{(property.rent / 100000).toFixed(1)}L
-          </div>
+          <Chip
+            label={`${formatRent(rent)}/mo`}
+            sx={{
+              position: 'absolute',
+              bottom: 12,
+              left: 12,
+              bgcolor: 'primary.main',
+              color: 'white',
+              fontWeight: 600,
+              fontSize: '0.875rem',
+            }}
+          />
+
+          {/* Verified Badge */}
+          <Chip
+            icon={<VerifiedIcon sx={{ fontSize: 14 }} />}
+            label="Verified"
+            size="small"
+            sx={{
+              position: 'absolute',
+              top: 12,
+              left: 12,
+              bgcolor: 'rgba(255,255,255,0.9)',
+              color: 'primary.main',
+              fontWeight: 500,
+              fontSize: '0.75rem',
+            }}
+          />
 
           {/* Save Button */}
-          <button
+          <IconButton
             onClick={handleSave}
-            className={`absolute top-3 right-3 w-8 h-8 rounded-sm flex items-center justify-center transition-colors ${
-              isSaved
-                ? 'bg-black text-white'
-                : 'bg-white text-black border border-gray-300'
-            }`}
+            sx={{
+              position: 'absolute',
+              top: 8,
+              right: 8,
+              bgcolor: isSaved ? 'secondary.main' : 'rgba(255,255,255,0.9)',
+              color: isSaved ? 'white' : 'grey.600',
+              '&:hover': {
+                bgcolor: isSaved ? 'secondary.dark' : 'white',
+                color: isSaved ? 'white' : 'secondary.main',
+              },
+            }}
             aria-label="Save property"
           >
-            ♥
-          </button>
-        </div>
+            {isSaved ? <FavoriteIcon /> : <FavoriteBorderIcon />}
+          </IconButton>
+        </Box>
 
         {/* Content */}
-        <div className="p-4">
-          {/* Title and BHK */}
-          <div className="flex justify-between items-start mb-2">
-            <h3 className="font-semibold text-base line-clamp-2">
-              {property.bhk} BHK • {property.title}
-            </h3>
-          </div>
+        <CardContent sx={{ p: 2 }}>
+          {/* Title */}
+          <Typography
+            variant="h6"
+            className="view-details"
+            sx={{
+              fontWeight: 600,
+              fontSize: '1rem',
+              mb: 0.5,
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+              transition: 'color 0.2s',
+            }}
+          >
+            {bhk} BHK Apartment
+          </Typography>
 
           {/* Location */}
-          <p className="text-gray-600 text-sm mb-3">{property.locality}</p>
+          <Stack direction="row" alignItems="center" spacing={0.5} sx={{ mb: 1.5, color: 'grey.600' }}>
+            <LocationOnIcon sx={{ fontSize: 16 }} />
+            <Typography
+              variant="body2"
+              sx={{
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              {locality}
+            </Typography>
+          </Stack>
 
-          {/* Details */}
-          <div className="flex text-sm text-gray-700 mb-3 space-x-3">
-            <span>{formatArea(property.area)}</span>
-            <span>•</span>
-            <span className="capitalize">{property.furnishedType.replace(/_/g, ' ')}</span>
-          </div>
+          {/* Features */}
+          <Stack direction="row" spacing={2} sx={{ mb: 2 }}>
+            <Stack direction="row" alignItems="center" spacing={0.5}>
+              <SquareFootIcon sx={{ fontSize: 16, color: 'grey.500' }} />
+              <Typography variant="body2" color="grey.700">
+                {area.toLocaleString('en-IN')} sqft
+              </Typography>
+            </Stack>
+            <Stack direction="row" alignItems="center" spacing={0.5}>
+              <WeekendIcon sx={{ fontSize: 16, color: 'grey.500' }} />
+              <Typography variant="body2" color="grey.700" sx={{ textTransform: 'capitalize' }}>
+                {furnishedType.replace(/_/g, ' ').toLowerCase()}
+              </Typography>
+            </Stack>
+          </Stack>
 
-          {/* Amenities Preview */}
-          {property.amenities?.length > 0 && (
-            <div className="flex flex-wrap gap-1 mb-3">
-              {property.amenities.slice(0, 3).map((amenity) => (
-                <span
-                  key={amenity}
-                  className="px-2 py-1 bg-gray-100 text-xs rounded-sm"
-                >
-                  {amenity}
-                </span>
-              ))}
-              {property.amenities.length > 3 && (
-                <span className="px-2 py-1 text-xs text-gray-600">
-                  +{property.amenities.length - 3}
-                </span>
-              )}
-            </div>
-          )}
+          <Divider sx={{ mb: 1.5 }} />
 
-          {/* View Details Link */}
-          <div className="pt-3 border-t">
-            <p className="text-xs text-gray-500">
-              {property.viewCount} views
-            </p>
-          </div>
-        </div>
-      </a>
+          {/* Footer */}
+          <Stack direction="row" justifyContent="space-between" alignItems="center">
+            <Typography variant="caption" color="grey.500">
+              Posted 2 days ago
+            </Typography>
+            <Stack direction="row" alignItems="center" spacing={0.5} className="view-details" sx={{ color: 'primary.main', transition: 'color 0.2s' }}>
+              <Typography variant="body2" fontWeight={600}>
+                View Details
+              </Typography>
+              <ArrowForwardIcon sx={{ fontSize: 16 }} />
+            </Stack>
+          </Stack>
+        </CardContent>
+      </Card>
     </Link>
   );
 }
