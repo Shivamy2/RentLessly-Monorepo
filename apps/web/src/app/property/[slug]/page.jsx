@@ -15,6 +15,7 @@ import { useProperty } from '@/hooks/useProperties';
 import { formatPrice, formatArea } from '@rent-lessly/utils';
 import { Button } from '@rent-lessly/ui';
 import { ScheduleVisitModal } from '@/components/ScheduleVisitModal';
+import { FullPageLoader } from '@/components/ui/FullPageLoader';
 import { useState } from 'react';
 
 export default function PropertyPage() {
@@ -23,17 +24,9 @@ export default function PropertyPage() {
   const [showVisitModal, setShowVisitModal] = useState(false);
 
   const { property, isLoading, isError } = useProperty(slug);
-  
+
   if (isLoading) {
-    return (
-      <div className="max-w-6xl mx-auto px-4 py-8">
-        <div className="animate-pulse">
-          <div className="bg-gray-300 h-96 mb-4"></div>
-          <div className="bg-gray-300 h-8 mb-2 w-1/2"></div>
-          <div className="bg-gray-300 h-4 w-3/4"></div>
-        </div>
-      </div>
-    );
+    return <FullPageLoader text="Loading property details..." />;
   }
 
   if (isError || !property) {

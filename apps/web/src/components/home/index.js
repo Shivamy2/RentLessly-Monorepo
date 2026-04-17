@@ -16,3 +16,5 @@ export { Testimonials }
 from './Testimonials';
 export { CTASection }
 from './CTASection';
+export { Sitemap }
+from './Sitemap';

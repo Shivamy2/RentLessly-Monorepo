@@ -43,8 +43,7 @@ export function SearchBox() {
   const handleSearch = (e) => {
     e.preventDefault();
     const params = new URLSearchParams();
-    if (city) params.set('city', city);
-    if (locality) params.set('locality', locality);
+    if (locality) params.set('q', locality);
     if (bhk) params.set('bhk', bhk);
     router.push(`/properties?${params.toString()}`);
   };

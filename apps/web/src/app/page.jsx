@@ -10,6 +10,7 @@ import {
   HowItWorks,
   // Testimonials,
   // CTASection,
+  Sitemap,
 } from '@/components/home';
 
 export default function HomePage() {
@@ -32,6 +33,9 @@ export default function HomePage() {
 
       {/* CTA Section */}
       {/* <CTASection /> */}
+
+      {/* Sitemap for SEO */}
+      <Sitemap />
     </>
   );
 }
